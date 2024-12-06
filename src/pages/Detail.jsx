@@ -1,7 +1,6 @@
-import { useEffect } from "react";
-import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { todoApi } from "../api/todos";
+
+import useTodoQuery from "../hooks/useTodoQuery";
 
 export default function Detail() {
   const { id } = useParams();
@@ -10,26 +9,10 @@ export default function Detail() {
   // TODO: 필수: useQuery 로 리팩터링 하세요.
   // TODO: 선택: useQuery 로 리팩터링 후, useTodoQuery 커스텀훅으로 정리해 보세요.
 
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [data, setData] = useState(null);
+  const { data, isPending, error } = useTodoQuery(id);
 
-  useEffect(() => {
-    const fetchDetail = async () => {
-      try {
-        const response = await todoApi(`/todos/${id}`);
-        setData(response.data);
-      } catch (err) {
-        setError(err);
-      } finally {
-        setIsLoading(false);
-      }
-    };
+  if (isPending) return <div style={{ fontSize: 36 }}>로딩중...</div>;
 
-    fetchDetail();
-  }, [id]);
-
-  if (isLoading) return <div style={{ fontSize: 36 }}>로딩중...</div>;
   if (error) {
     console.error(error);
     return (
